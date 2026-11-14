@@ -34,3 +34,17 @@ Les migrations sont à exécuter **dans l'ordre** :
 - Tous les montants sont en **centimes entiers** (12,50 EUR = `1250`).
 - Aucune clé secrète dans le code : seule la clé publique (anon / publishable) est utilisée côté navigateur.
 - Toutes les tables de données personnelles ont RLS activé.
+
+## Site (frontend)
+
+```
+index.html          page unique (l'application)
+css/styles.css      styles (clair / sombre, mobile)
+js/config.js        URL + clé publique Supabase
+js/app.js           session, navigation
+js/auth.js          connexion, inscription, mot de passe oublié
+js/api.js           accès à la base Supabase
+js/views/*.js       pages : tableau de bord, transactions, budgets, épargne, statistiques, paramètres
+```
+
+Site 100 % statique : Vercel le publie tel quel, sans build.
