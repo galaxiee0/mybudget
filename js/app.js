@@ -5,7 +5,7 @@ import * as api from "./api.js";
 import { showAuth, showRecovery, showFatal } from "./auth.js";
 import { loadingBlock, errorBlock, destroyCharts, refreshIcons, toast, $ } from "./ui.js";
 import { esc } from "./utils.js";
-import { applyTheme, getTheme } from "./theme.js";
+import { applyTheme, getTheme, effectiveTheme } from "./theme.js";
 
 applyTheme(getTheme());
 
@@ -19,6 +19,9 @@ const ROUTES = {
 };
 const MOBILE_NAV = ["/", "/transactions", "/budgets", "/epargne", "/parametres"];
 const LOGO = `<span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19V7l7 7 7-7v12"/></svg></span>`;
+
+// Deux icônes : la lune (en thème clair) et le soleil (en thème sombre) ; le CSS affiche la bonne.
+const THEME_ICONS = `<i data-lucide="moon" class="ico-moon"></i><i data-lucide="sun" class="ico-sun"></i>`;
 
 const routePath = () => {
   const p = (location.hash.replace(/^#/, "") || "/").replace(/\/+$/, "") || "/";
@@ -36,13 +39,14 @@ function mountShell() {
         <div class="brand">${LOGO}<span>MyBudget</span></div>
         <nav class="nav">${Object.keys(ROUTES).map((p) => link(p)).join("")}</nav>
         <div class="sidebar-foot">
-          <button class="btn" type="button" data-theme><i data-lucide="moon"></i>Thème</button>
+          <button class="btn" type="button" data-toggle-theme>${THEME_ICONS}<span>Changer de thème</span></button>
           <button class="btn" type="button" data-logout><i data-lucide="log-out"></i>Déconnexion</button>
         </div>
       </aside>
       <div class="main-col">
         <header class="topbar"><h1 id="page-title"></h1>
           <div class="topbar-right"><span class="user-name" id="user-name"></span><div class="avatar" id="avatar"></div>
+            <button class="icon-btn" type="button" data-toggle-theme aria-label="Changer de thème">${THEME_ICONS}</button>
             <button class="icon-btn" type="button" data-logout aria-label="Déconnexion"><i data-lucide="log-out"></i></button></div></header>
         <main id="view"></main>
       </div>
@@ -50,11 +54,9 @@ function mountShell() {
     <nav class="bottom-nav">${MOBILE_NAV.map((p) => link(p)).join("")}</nav>`;
   refreshIcons();
   document.querySelectorAll("[data-logout]").forEach((b) => b.addEventListener("click", () => sb.auth.signOut()));
-  $("[data-theme]").addEventListener("click", () => {
-    const dark = document.documentElement.dataset.theme === "dark";
-    applyTheme(dark ? "light" : "dark");
-    route();
-  });
+  // NB : l'attribut s'appelle data-toggle-theme (et pas data-theme, déjà utilisé par la balise <html>).
+  document.querySelectorAll("[data-toggle-theme]").forEach((b) =>
+    b.addEventListener("click", () => applyTheme(effectiveTheme() === "dark" ? "light" : "dark")));
   updateUserBits();
   mounted = true;
 }
@@ -95,6 +97,8 @@ async function route() {
   }
 }
 window.addEventListener("hashchange", route);
+// Changement de thème : on redessine la page (les graphiques reprennent les bonnes couleurs).
+document.addEventListener("theme-changed", () => { if (mounted) route(); });
 
 async function startApp(user) {
   state.user = user;

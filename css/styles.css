@@ -18,6 +18,7 @@
   --radius: 14px;
   --shadow: 0 1px 2px rgba(20, 24, 40, 0.04), 0 1px 3px rgba(20, 24, 40, 0.04);
   --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light; /* champs de date, listes déroulantes et barres de défilement natifs */
 }
 
 :root[data-theme="dark"] {
@@ -37,7 +38,13 @@
   --amber: #fbbf24;
   --amber-soft: #302511;
   --shadow: none;
+  color-scheme: dark;
 }
+
+/* Icône du bouton de thème : lune en clair, soleil en sombre */
+.ico-sun { display: none; }
+:root[data-theme="dark"] .ico-sun { display: inline-block; }
+:root[data-theme="dark"] .ico-moon { display: none; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
