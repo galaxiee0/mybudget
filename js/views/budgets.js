@@ -1,7 +1,7 @@
 // Budgets mensuels : global et par catégorie.
 import * as api from "../api.js";
 import { state, catById, catColor, currency, expenseCategories } from "../state.js";
-import { esc, formatMoney, monthLabel, shiftMonth, currentMonth, parseAmount, centsToInput, pct } from "../utils.js";
+import { esc, currencyLabel, amountPlaceholder, formatMoney, monthLabel, shiftMonth, currentMonth, parseAmount, centsToInput, pct } from "../utils.js";
 import { openModal, bindForm, toast, confirmDialog, monthNavHtml, progressClass, emptyState, refreshIcons, $ } from "../ui.js";
 
 export async function render(el) {
@@ -80,8 +80,8 @@ function budgetModal({ month, refresh, categoryId = null, cents = null }) {
     title: `Budget — ${monthLabel(month)}`,
     content: `<form id="b-form" novalidate><div class="form-error" hidden></div>
       <div class="field"><label>Pour</label><select class="input" name="category" ${editing ? "disabled" : ""}>${opts}</select></div>
-      <div class="field"><label>Montant maximum (${esc(currency())})</label>
-        <input class="input" name="amount" inputmode="decimal" placeholder="0,00" value="${cents ? esc(centsToInput(cents)) : ""}" required /></div>
+      <div class="field"><label>Montant maximum (${esc(currencyLabel(currency()))})</label>
+        <input class="input" name="amount" inputmode="decimal" placeholder="${amountPlaceholder()}" value="${cents ? esc(centsToInput(cents)) : ""}" required /></div>
       <p class="hint" style="margin:0">Si un budget existe déjà pour ce choix, il sera mis à jour.</p>
       <div class="modal-actions"><button class="btn" type="button" data-cancel>Annuler</button>
         <button class="btn btn-primary" type="submit">Enregistrer</button></div></form>`,

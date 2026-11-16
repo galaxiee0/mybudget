@@ -1,7 +1,7 @@
 // Objectifs d'épargne.
 import * as api from "../api.js";
 import { currency } from "../state.js";
-import { esc, formatMoney, formatDate, parseAmount, todayISO, pct, daysBetween } from "../utils.js";
+import { esc, currencyLabel, amountPlaceholder, formatMoney, formatDate, parseAmount, todayISO, pct, daysBetween } from "../utils.js";
 import { openModal, bindForm, toast, confirmDialog, emptyState, refreshIcons, $ } from "../ui.js";
 
 export async function render(el) {
@@ -61,8 +61,8 @@ function goalModal(refresh) {
     title: "Nouvel objectif d'épargne",
     content: `<form id="g-form" novalidate><div class="form-error" hidden></div>
       <div class="field"><label>Nom</label><input class="input" name="name" maxlength="80" required /></div>
-      <div class="field-row"><div class="field"><label>Montant cible (${esc(currency())})</label>
-        <input class="input" name="target" inputmode="decimal" placeholder="0,00" required /></div>
+      <div class="field-row"><div class="field"><label>Montant cible (${esc(currencyLabel(currency()))})</label>
+        <input class="input" name="target" inputmode="decimal" placeholder="${amountPlaceholder()}" required /></div>
         <div class="field"><label>Échéance (facultatif)</label><input class="input" type="date" name="deadline" min="${todayISO()}" /></div></div>
       <div class="modal-actions"><button class="btn" type="button" data-cancel>Annuler</button>
         <button class="btn btn-primary" type="submit">Créer</button></div></form>`,
@@ -82,8 +82,8 @@ function contribModal(goalId, refresh) {
   const m = openModal({
     title: "Ajouter à l'épargne",
     content: `<form id="c-form" novalidate><div class="form-error" hidden></div>
-      <div class="field-row"><div class="field"><label>Montant (${esc(currency())})</label>
-        <input class="input" name="amount" inputmode="decimal" placeholder="0,00" required /></div>
+      <div class="field-row"><div class="field"><label>Montant (${esc(currencyLabel(currency()))})</label>
+        <input class="input" name="amount" inputmode="decimal" placeholder="${amountPlaceholder()}" required /></div>
         <div class="field"><label>Date</label><input class="input" type="date" name="date" value="${todayISO()}" required /></div></div>
       <div class="modal-actions"><button class="btn" type="button" data-cancel>Annuler</button>
         <button class="btn btn-primary" type="submit">Ajouter</button></div></form>`,

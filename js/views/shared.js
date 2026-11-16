@@ -1,5 +1,5 @@
 // Morceaux d'interface partagés entre plusieurs pages.
-import { esc, formatDate, formatMoney, parseAmount, centsToInput, todayISO } from "../utils.js";
+import { esc, currencyLabel, amountPlaceholder, amountExample, formatDate, formatMoney, parseAmount, centsToInput, todayISO } from "../utils.js";
 import { state, catById, catColor, currency } from "../state.js";
 import { openModal, bindForm, toast } from "../ui.js";
 import * as api from "../api.js";
@@ -40,8 +40,8 @@ export function openTransactionModal({ tx = null, type = "expense", onSaved }) {
         <label><input type="radio" name="type" value="expense" ${t === "expense" ? "checked" : ""}><span>Dépense</span></label>
         <label><input type="radio" name="type" value="income" ${t === "income" ? "checked" : ""}><span>Revenu</span></label>
       </div>
-      <div class="field"><label for="tx-amount">Montant (${esc(currency())})</label>
-        <input class="input" id="tx-amount" name="amount" inputmode="decimal" placeholder="0,00" autocomplete="off"
+      <div class="field"><label for="tx-amount">Montant (${esc(currencyLabel(currency()))})</label>
+        <input class="input" id="tx-amount" name="amount" inputmode="decimal" placeholder="${amountPlaceholder()}" autocomplete="off"
           value="${tx ? esc(centsToInput(tx.amount_cents)) : ""}" required /></div>
       <div class="field-row">
         <div class="field"><label for="tx-cat">Catégorie</label>
@@ -67,7 +67,7 @@ export function openTransactionModal({ tx = null, type = "expense", onSaved }) {
 
   bindForm(form, async (fd) => {
     const cents = parseAmount(fd.get("amount"));
-    if (!cents) throw new Error("Entre un montant valide (ex. 12,50).");
+    if (!cents) throw new Error(`Entre un montant valide (${amountExample()}).`);
     const date = String(fd.get("date") || "");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("Choisis une date.");
     const row = {

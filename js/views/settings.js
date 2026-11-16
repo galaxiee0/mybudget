@@ -6,7 +6,10 @@ import { esc, csvCell, centsToPlain } from "../utils.js";
 import { bindForm, toast, confirmDialog, openModal, refreshIcons, $ } from "../ui.js";
 import { applyTheme, getTheme } from "../theme.js";
 
-const CURRENCIES = ["EUR", "USD", "GBP", "CHF", "CAD"];
+const CURRENCIES = [
+  ["EUR", "EUR — Euro"], ["XOF", "FCFA — Afrique de l'Ouest (XOF)"], ["XAF", "FCFA — Afrique centrale (XAF)"],
+  ["USD", "USD — Dollar US"], ["GBP", "GBP — Livre sterling"], ["CHF", "CHF — Franc suisse"], ["CAD", "CAD — Dollar canadien"],
+];
 
 export async function render(el) {
   async function draw() {
@@ -26,7 +29,8 @@ export async function render(el) {
           <div class="field"><label>Email</label><input class="input" value="${esc(state.user.email)}" disabled /></div>
           <div class="field"><label>Prénom ou pseudo</label><input class="input" name="name" maxlength="40" value="${esc(p?.display_name || "")}" /></div>
           <div class="field"><label>Devise</label><select class="input" name="currency">
-            ${CURRENCIES.map((c) => `<option ${c === p?.currency ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+            ${CURRENCIES.map(([code, label]) => `<option value="${code}" ${code === p?.currency ? "selected" : ""}>${esc(label)}</option>`).join("")}</select>
+            <span class="hint">Changer de devise ne convertit pas tes montants : seule l'unité affichée change.</span></div>
           <div class="field"><label>Affichage</label><select class="input" name="theme">
             ${[["auto", "Automatique"], ["light", "Clair"], ["dark", "Sombre"]].map(([v, l]) => `<option value="${v}" ${v === getTheme() ? "selected" : ""}>${l}</option>`).join("")}</select></div>
           <button class="btn btn-primary" type="submit">Enregistrer</button></form></div>

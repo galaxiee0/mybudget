@@ -1,3 +1,5 @@
+import { state } from "./state.js";
+
 // Fonctions utilitaires : montants, dates, sécurité du texte.
 
 /** Échappe le texte avant de l'insérer dans du HTML (protège contre l'injection de code). */
@@ -8,11 +10,20 @@ export function esc(value) {
 }
 
 // ---------- Montants (toujours en centimes entiers) ----------
+// Le FCFA (XOF = Afrique de l'Ouest, XAF = Afrique centrale) n'a pas de décimales :
+// on garde la même règle interne (valeur x 100) mais on n'accepte et n'affiche que des nombres entiers.
+const FCFA = new Set(["XOF", "XAF"]);
+export const isWholeCurrency = (code = state.profile?.currency) => FCFA.has(code);
+/** Nom affiché dans les libellés : "FCFA" pour XOF/XAF, sinon le code (EUR, USD…). */
+export const currencyLabel = (code) => (FCFA.has(code) ? "FCFA" : code);
+export const amountPlaceholder = () => (isWholeCurrency() ? "0" : "0,00");
+export const amountExample = () => (isWholeCurrency() ? "ex. 5000" : "ex. 12,50");
 
 /** "12,50" ou "12.5" -> 1250. Retourne null si invalide ou <= 0. Aucun calcul décimal. */
 export function parseAmount(input) {
   const s = String(input ?? "").trim().replace(/\s/g, "").replace(",", ".");
-  if (!/^\d+(\.\d{1,2})?$/.test(s)) return null;
+  const pattern = isWholeCurrency() ? /^\d+$/ : /^\d+(\.\d{1,2})?$/;
+  if (!pattern.test(s)) return null;
   const [int, dec = ""] = s.split(".");
   const cents = Number(int) * 100 + Number(dec.padEnd(2, "0"));
   if (!Number.isSafeInteger(cents) || cents <= 0) return null;
@@ -22,11 +33,15 @@ export function parseAmount(input) {
 /** 1250 -> "12,50" (pour pré-remplir un champ). */
 export function centsToInput(cents) {
   const a = Math.abs(cents);
+  if (isWholeCurrency()) return String(Math.round(a / 100));
   return `${Math.floor(a / 100)},${String(a % 100).padStart(2, "0")}`;
 }
 
 /** 1250 -> "12,50 €" (affichage uniquement). */
 export function formatMoney(cents, currency = "EUR") {
+  if (FCFA.has(currency)) {
+    return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(Math.round(cents / 100)) + "\u00a0FCFA";
+  }
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency }).format(cents / 100);
 }
 
@@ -83,5 +98,6 @@ export function csvCell(value) {
 export function centsToPlain(cents) {
   const sign = cents < 0 ? "-" : "";
   const a = Math.abs(cents);
+  if (isWholeCurrency()) return `${sign}${Math.round(a / 100)}`;
   return `${sign}${Math.floor(a / 100)},${String(a % 100).padStart(2, "0")}`;
 }

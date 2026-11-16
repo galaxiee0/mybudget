@@ -1,7 +1,7 @@
 // Historique des transactions avec filtres.
 import * as api from "../api.js";
 import { state, catName, currency } from "../state.js";
-import { esc, parseAmount, formatMoney } from "../utils.js";
+import { esc, parseAmount, formatMoney, amountPlaceholder } from "../utils.js";
 import { emptyState, confirmDialog, toast, refreshIcons, $ } from "../ui.js";
 import { txRow, openTransactionModal } from "./shared.js";
 
@@ -66,8 +66,8 @@ export async function render(el) {
         <div class="field"><label>Catégorie</label><select class="input" name="categoryId">${catOptions()}</select></div>
         <div class="field"><label>Du</label><input class="input" type="date" name="from" /></div>
         <div class="field"><label>Au</label><input class="input" type="date" name="to" /></div>
-        <div class="field"><label>Montant min.</label><input class="input" name="min" inputmode="decimal" placeholder="0,00" /></div>
-        <div class="field"><label>Montant max.</label><input class="input" name="max" inputmode="decimal" placeholder="0,00" /></div>
+        <div class="field"><label>Montant min.</label><input class="input" name="min" inputmode="decimal" placeholder="${amountPlaceholder()}" /></div>
+        <div class="field"><label>Montant max.</label><input class="input" name="max" inputmode="decimal" placeholder="${amountPlaceholder()}" /></div>
       </form>
       <div class="field" style="margin:12px 0 0"><input class="input" id="search" placeholder="Rechercher dans les descriptions…" /></div>
     </div>
